@@ -170,15 +170,6 @@
                 .catch(error => alertify.error('Issue sending SMS.'))
             }
 
-            SMSPayload(currentTemp, highTemp, lowTemp, feelsLikeTemp, condition){
-                return `Weather report for ${this.city}, ${this.state}\n` +
-                condition + '\n' +
-                `Currently: ${currentTemp}°F\n` + 
-                `Feels Like: ${feelsLikeTemp}°F\n` + 
-                `Low: ${lowTemp}°F\n` + 
-                `High: ${highTemp}°F\n`
-            }
-
         }
         
         
