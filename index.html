@@ -114,6 +114,8 @@
                 let highTemp = Math.round(results.data.main.temp_max);
                 let lowTemp = Math.round(results.data.main.temp_min);
                 let feelsLikeTemp = Math.round(results.data.main.feels_like);
+                
+                // It is possible to return multiple conditions, but the first is the primary condition, according to OpenWeather
                 // Default to clear if issue loading condition
                 let condition = results.data.weather[0].main || "Clear";
                 // Default to icon for clear if issue loading condition icon
@@ -148,11 +150,14 @@
             }
 
             setupSMSButton(weatherData) {
+                // Sets up the click listener for the new 'sendSMSButton' element
                 let sendSMSButton = document.getElementById("sendSMSButton");
                 sendSMSButton.onclick = () => this.sendSMS(weatherData);
             }
  
             sendSMS(weatherData) {
+                // Sends request to SMS endpoint set up on AWS API Gateway
+                // On success/fail uses Alertify to display status
                 console.log("Sending SMS");
                 let phoneNumber = document.getElementById("phoneNumber").value;
                 axios.get(this.SMSEndpoint, {
