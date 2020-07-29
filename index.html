@@ -49,12 +49,6 @@
          * - Request a user's phone number and send them an SMS with the weather.
          */
 
-        // Override alertify defaults to use Bootstrap styling
-        alertify.defaults.transition = "slide";
-        alertify.defaults.theme.ok = "btn btn-primary";
-        alertify.defaults.theme.cancel = "btn btn-danger";
-        alertify.defaults.theme.input = "form-control";
-
         class Test {
             constructor() {
 
@@ -271,6 +265,12 @@
     <div class="button-container"></div>
     <script>
         'use strict';
+
+        // Override alertify defaults to use Bootstrap styling
+        alertify.defaults.transition = "slide";
+        alertify.defaults.theme.ok = "btn btn-primary";
+        alertify.defaults.theme.cancel = "btn btn-danger";
+        alertify.defaults.theme.input = "form-control";
 
         /**
          * Creates a button for kicking off the test and adds it to the DOM.
