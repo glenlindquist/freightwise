@@ -89,12 +89,8 @@
             }
 
             setResults(results) {
-
                 let resultsHtml = this.formatResults(results);
                 this.testResults.innerHTML = (resultsHtml || '').toString();
-
-                let sendSMSButton = document.getElementById("sendSMSButton");
-                sendSMSButton.onclick = () => this.sendSMS(results);
             }
 
             formatError(message) {
