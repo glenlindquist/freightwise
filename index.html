@@ -76,15 +76,13 @@
                     }
                 })
                 .then(response => {
-                    this.setResults(response)
-                    let sendSMSButton = document.getElementById("sendSMSButton");
-                    sendSMSButton.onclick = () => this.sendSMS(response);
+                    this.setResults(response);
+                    this.setupSMSButton(response);
                 })
                 .catch(error => this.setError(error));
             }
 
             setError(message) {
-                console.log(message);
                 let messageHtml = this.formatError(message);
                 this.testResults.innerHTML = (messageHtml || '').toString();
             }
@@ -110,7 +108,6 @@
             }
 
             formatResults(results) {
-                console.log(results);
                 // Round to int for better readability
                 let currentTemp = Math.round(results.data.main.temp);
                 let highTemp = Math.round(results.data.main.temp_max);
@@ -148,6 +145,11 @@
                     </div>
                 `;
             }
+
+            setupSMSButton(weatherData) {
+                let sendSMSButton = document.getElementById("sendSMSButton");
+                sendSMSButton.onclick = () => this.sendSMS(weatherData);
+            }
  
             sendSMS(weatherData) {
                 console.log("Sending SMS");
@@ -165,7 +167,7 @@
                     }
                 })
                 .then(response => alertify.success('SMS message sent!'))
-                .catch(error => alertify.error('Issue sending SMS'))
+                .catch(error => alertify.error('Issue sending SMS.'))
             }
 
             SMSPayload(currentTemp, highTemp, lowTemp, feelsLikeTemp, condition){
