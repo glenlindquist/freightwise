@@ -1,5 +1,7 @@
 # FreightWise Weather App
 
+[View app](https://glenlindquist.github.io/freightwise/)
+
 Simple app to grab weather data for Brentwood, TN from OpenWeather API.
 
 Displays current temp, feels-like temp, daily high and low, along with icon to indication weather conditions.
