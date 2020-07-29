@@ -239,8 +239,9 @@
             justify-content: center;
         }
 
-        .sms-alert{
-          display: none;
+        .custom-notification{
+          border-radius: 5px !important;
+          text-shadow: none;
         }
 
 
@@ -270,6 +271,7 @@
         alertify.defaults.theme.ok = "btn btn-primary";
         alertify.defaults.theme.cancel = "btn btn-danger";
         alertify.defaults.theme.input = "form-control";
+        alertify.defaults.notifier.classes.visible = "custom-notification"
 
         /**
          * Creates a button for kicking off the test and adds it to the DOM.
