@@ -84,7 +84,7 @@
                 this.testResults.innerHTML = (resultsHtml || '').toString();
 
                 let sendSMSButton = document.getElementById("sendSMSButton");
-                sendSMSButton.onclick = () => this.sendSMS({weatherData: results});
+                sendSMSButton.onclick = () => this.sendSMS(results);
             }
 
             formatError(message) {
@@ -139,7 +139,6 @@
             }
  
             sendSMS(payload) {
-                console.log(payload);
                 let phoneNumber = document.getElementById("phoneNumber").value;
                 axios.get(this.SMSEndpoint, {
                     params: {
