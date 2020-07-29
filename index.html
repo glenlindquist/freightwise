@@ -83,9 +83,8 @@
                 let resultsHtml = this.formatResults(results);
                 this.testResults.innerHTML = (resultsHtml || '').toString();
 
-                //TODO: listener for sms button
                 let sendSMSButton = document.getElementById("sendSMSButton");
-                sendSMSButton.onclick = () => this.sendSMS();
+                sendSMSButton.onclick = () => this.sendSMS({weatherData: results});
             }
 
             formatError(message) {
@@ -111,13 +110,12 @@
                 // Default to icon for clear if issue loading condition icon
                 // OpenWeather provides icons based on this icon code
                 let conditionIcon = results.data.weather[0].icon || "01d";
-                let SMSPayload = this.SMSPayload(currentTemp, highTemp, lowTemp, feelsLikeTemp, condition);
 
                 return `
                     <div class="card temp-card success text-center">
                         <div class="temp-card-header card-header">Weather for ${this.city}, ${this.state}</div>
                         <div class="temp-card-body card-body">
-                            <img alt="${condition}" src="http://openweathermap.org/img/wn/${conditionIcon}@4x.png" />
+                            <img alt="${condition}" src="https://openweathermap.org/img/wn/${conditionIcon}@4x.png" />
                             <h1 class="card-title">${currentTemp}°F </h1>
                             <p>(Feels like ${feelsLikeTemp}°F)</p>
                             <hr>
@@ -131,7 +129,6 @@
                                     <label class="sr-only" for="phoneNumber">Phone Number (e.g., 123-456-7890)</label>
                                     <input type="text" class="form-control" id="phoneNumber" placeholder="Phone Number (e.g., 123-456-7890)">
                                 </div>
-                                <input type="hidden" id="SMSPayload" value="${SMSPayload}">
                                 <div class="form-group">
                                     <button type="button" class="btn btn-success" id="sendSMSButton">Send Weather Info via SMS</button>
                                 </div>
@@ -141,14 +138,15 @@
                 `;
             }
  
-            sendSMS() {
-                console.log("SENDING");
+            sendSMS(payload) {
+                console.log(payload);
                 let phoneNumber = document.getElementById("phoneNumber").value;
-                let payload = document.getElementById("SMSPayload").value;
                 axios.get(this.SMSEndpoint, {
                     params: {
-                        number: phoneNumber,
-                        message: payload
+                        phone: phoneNumber,
+                        city: this.city,
+                        state: this.state,
+                        weatherData: payload,
                     }
                 })
                 .then(response => console.log(response))
@@ -156,13 +154,12 @@
             }
 
             SMSPayload(currentTemp, highTemp, lowTemp, feelsLikeTemp, condition){
-                return `Weather report for ${this.city}, ${this.state}
-                ${condition}
-                Currently ${currentTemp}°F
-                Feels Like ${feelsLikeTemp}°F
-                Low ${lowTemp}°F
-                High ${highTemp}°F
-                `
+                return `Weather report for ${this.city}, ${this.state}\n` +
+                condition + '\n' +
+                `Currently: ${currentTemp}°F\n` + 
+                `Feels Like: ${feelsLikeTemp}°F\n` + 
+                `Low: ${lowTemp}°F\n` + 
+                `High: ${highTemp}°F\n`
             }
 
         }
