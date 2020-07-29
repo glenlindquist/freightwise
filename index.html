@@ -60,7 +60,7 @@
                 // cityId is provided by openWeather. This is what they recommend using to avoid ambiguous API calls
                 this.cityId = '4608408';
                 this.openWeatherApiKey = '25e989bd41e3e24ce13173d8126e0fd6';
-                this.weatherEndpoint = `https://api.openweathermap.org/data/2.5/weather?id=${this.cityId}&units=imperial&appid=${this.openWeatherApiKey}`;
+                this.weatherEndpoint = 'https://api.openweathermap.org/data/2.5/weather';
                 // AWS API Gateway endpoint I created to send one-off SMS messages
                 // This endpoint runs an AWS Lambda function, which in turn uses AWS Pinpoint to send an SMS message
                 this.SMSEndpoint = 'https://jz0en4en82.execute-api.us-east-1.amazonaws.com/send-one-off-text';
@@ -68,18 +68,29 @@
 
             async run() {
                 console.log(new Date().toISOString(), '[Test]', 'Running the test');
-                axios.get(this.weatherEndpoint)
-                    .then(response => this.setResults(response))
-                    .catch(error => this.setError(error));
+                axios.get(this.weatherEndpoint, {
+                    params: {
+                        id: this.cityId,
+                        units: "imperial",
+                        appid: this.openWeatherApiKey
+                    }
+                })
+                .then(response => {
+                    this.setResults(response)
+                    let sendSMSButton = document.getElementById("sendSMSButton");
+                    sendSMSButton.onclick = () => this.sendSMS(response);
+                })
+                .catch(error => this.setError(error));
             }
 
             setError(message) {
-                console.log('error:', message);
+                console.log(message);
                 let messageHtml = this.formatError(message);
                 this.testResults.innerHTML = (messageHtml || '').toString();
             }
 
             setResults(results) {
+
                 let resultsHtml = this.formatResults(results);
                 this.testResults.innerHTML = (resultsHtml || '').toString();
 
@@ -138,18 +149,23 @@
                 `;
             }
  
-            sendSMS(payload) {
+            sendSMS(weatherData) {
+                console.log("Sending SMS");
                 let phoneNumber = document.getElementById("phoneNumber").value;
                 axios.get(this.SMSEndpoint, {
                     params: {
                         phone: phoneNumber,
                         city: this.city,
                         state: this.state,
-                        weatherData: payload,
+                        currentTemp: weatherData.data.main.temp,
+                        highTemp: weatherData.data.main.temp_max,
+                        lowTemp: weatherData.data.main.temp_min,
+                        feelsLike: weatherData.data.main.feels_like,
+                        condition: weatherData.data.weather[0].main
                     }
                 })
-                .then(response => console.log(response))
-                .catch(error => console.log(error));
+                .then(response => alertify.success('SMS message sent!'))
+                .catch(error => alertify.error('Issue sending SMS'))
             }
 
             SMSPayload(currentTemp, highTemp, lowTemp, feelsLikeTemp, condition){
@@ -229,25 +245,31 @@
             justify-content: center;
         }
 
+        .sms-alert{
+          display: none;
+        }
+
 
     </style>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-    <!-- Add Bootstrap for quick styling -->
+    <!-- Bootstrap for quick styling -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+    <!-- Alertify.js lib for quick pop-up notifications/alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
 </head>
 <body>
-    <div class="test-results">
-
-    </div>
-
+    <div class="test-results"></div>
     <div class="button-container"></div>
-
     <script>
         'use strict';
 
